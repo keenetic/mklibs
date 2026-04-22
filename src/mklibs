@@ -622,6 +622,15 @@ while 1:
                 symbols.add(ProvidedSymbol('_Unwind_GetCFA', None, None, True))
                 symbols.add(ProvidedSymbol('_Unwind_Resume', None, None, True))
 
+            if soname in ("libsupc++.so",):
+                crtbegin = command(target + 'gcc', *gcc_options, '-print-file-name=crtbeginS.o')
+                extra_pre_obj.extend(crtbegin)
+
+                crtend = command(target + 'gcc', *gcc_options, '-print-file-name=crtendS.o')
+                extra_post_obj.extend(crtend)
+
+                symbols.add(ProvidedSymbol('__dso_handle', None, None, True))
+
             map_file = find_pic_map(library)
             if map_file:
                 extra_flags.append("-Wl,--version-script=" + map_file)
